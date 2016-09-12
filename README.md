@@ -1,3 +1,3 @@
 # Cassandra Kinesis
 
-Cassandra Kinesis connector.
+Cassandra connector for AWS Kinesis that allows Kinesis data to be stored in a Cassandra database.  

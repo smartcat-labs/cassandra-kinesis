@@ -1,0 +1,16 @@
+## Common
+*~
+**/temp
+
+## Java
+**/target
+*.settings
+*.classpath
+*.project
+*.java-version
+
+## Scala
+**/.idea
+
+## Intellij
+*.iml
