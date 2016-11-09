@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>io.smartcat.cassandra.kinesis</groupId>
+    <groupId>io.smartcat.kinesis.cassandra</groupId>
     <artifactId>cassandra-kinesis</artifactId>
     <packaging>jar</packaging>
     <version>1.0.0-SNAPSHOT</version>
@@ -31,39 +31,21 @@
         <tag>HEAD</tag>
     </scm>
 
-    <developers>
-        <developer>
-            <name>Nenad Bozic</name>
-            <email>nenad.bozic@smartcat.io</email>
-            <organization>SmartCat</organization>
-            <organizationUrl>http://www.smartcat.io</organizationUrl>
-        </developer>
-        <developer>
-            <name>Matija Gobec</name>
-            <email>matija.gobec@smartcat.io</email>
-            <organization>SmartCat</organization>
-            <organizationUrl>http://www.smartcat.io</organizationUrl>
-        </developer>
-        <developer>
-            <name>Nikola Invancevic</name>
-            <email>nikola.ivancevic@smartcat.io</email>
-            <organization>SmartCat</organization>
-            <organizationUrl>http://www.smartcat.io</organizationUrl>
-        </developer>
-    </developers>
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <source.level>1.8</source.level>
         <code.level>1.8</code.level>
-        <version.cassandra.driver>3.0.0</version.cassandra.driver>
-        <version.amazon-kinesis-client>1.7.0</version.amazon-kinesis-client>
+        <version.cassandra.driver>3.0.4</version.cassandra.driver>
+        <version.amazon-kinesis-client>1.4.0</version.amazon-kinesis-client>
+        <version.amazon-kinesis-connectors>1.2.0</version.amazon-kinesis-connectors>
         <version.slf4j>1.7.21</version.slf4j>
         <version.junit>4.12</version.junit>
         <version.assertj>2.4.1</version.assertj>
         <version.mockito>1.10.19</version.mockito>
         <version.plugin.compiler>3.5.1</version.plugin.compiler>
         <version.plugin.checkstyle>2.17</version.plugin.checkstyle>
+        <version.plugin.gpg>1.6</version.plugin.gpg>
+        <version.plugin.shade>2.4.3</version.plugin.shade>
     </properties>
 
     <dependencies>
@@ -71,6 +53,11 @@
             <groupId>com.amazonaws</groupId>
             <artifactId>amazon-kinesis-client</artifactId>
             <version>${version.amazon-kinesis-client}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>amazon-kinesis-connectors</artifactId>
+            <version>${version.amazon-kinesis-connectors}</version>
         </dependency>
         <dependency>
             <groupId>com.datastax.cassandra</groupId>
@@ -100,8 +87,6 @@
             <version>${version.assertj}</version>
             <scope>test</scope>
         </dependency>
-
-
     </dependencies>
 
     <build>
@@ -146,6 +131,45 @@
                                     <propertiesLocation>checkstyle.properties</propertiesLocation>
                                     <excludes>**/generated/**/*</excludes>
                                 </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-shade-plugin</artifactId>
+                        <version>${version.plugin.shade}</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>shade</goal>
+                                </goals>
+                                <configuration>
+                                    <shadedArtifactAttached>true</shadedArtifactAttached>
+                                    <shadedClassifierName>all</shadedClassifierName>                                
+                                    <transformers>
+                                        <transformer
+                                            implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                            <manifestEntries>
+                                                <Main-Class>io.smartcat.kinesis.cassandra.CassandraKinesisConnector</Main-Class>
+                                            </manifestEntries>
+                                        </transformer>
+                                    </transformers>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>${version.plugin.gpg}</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
                             </execution>
                         </executions>
                     </plugin>
