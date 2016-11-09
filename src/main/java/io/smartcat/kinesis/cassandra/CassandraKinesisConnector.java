@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 
 /**
- * Cassandra Kinesis connector based on {@link CassasndraKinesisConnectorExecutor}. Connector properties
+ * Cassandra Kinesis connector based on {@link CassandraKinesisConnectorExecutor}. Connector properties
  * are load from <code>cassandra-kinesis-connector.properties</code> if present. AWS
  * credentials are provided using {@link DefaultAWSCredentialsProviderChain}.
  */
@@ -42,7 +42,7 @@ public class CassandraKinesisConnector {
 
         CassandraKinesisConnectorConfiguration conf = new CassandraKinesisConnectorConfiguration(props,
                 new DefaultAWSCredentialsProviderChain());
-        CassasndraKinesisConnectorExecutor executor = new CassasndraKinesisConnectorExecutor(conf);
+        CassandraKinesisConnectorExecutor executor = new CassandraKinesisConnectorExecutor(conf);
 
         (new Thread(executor)).start();
     }

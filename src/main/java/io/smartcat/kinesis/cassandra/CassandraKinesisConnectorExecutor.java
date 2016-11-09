@@ -23,8 +23,8 @@ import com.amazonaws.services.kinesis.connectors.interfaces.ITransformerBase;
  * {@link ITransformerBase} and {@link IEmitter} respectively. A simple {@link BasicMemoryBuffer} is used as
  * {@link IBuffer}, and {@link AllPassFilter} as {@link IFilter}.
  */
-public class CassasndraKinesisConnectorExecutor extends KinesisConnectorExecutorBase<byte[], List<CassandraRecord>> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(CassasndraKinesisConnectorExecutor.class);
+public class CassandraKinesisConnectorExecutor extends KinesisConnectorExecutorBase<byte[], List<CassandraRecord>> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CassandraKinesisConnectorExecutor.class);
 
     private CassandraKinesisConnectorConfiguration config;
 
@@ -32,7 +32,7 @@ public class CassasndraKinesisConnectorExecutor extends KinesisConnectorExecutor
      * Constructor.
      * @param config the given configuration
      */
-    public CassasndraKinesisConnectorExecutor(CassandraKinesisConnectorConfiguration config) {
+    public CassandraKinesisConnectorExecutor(CassandraKinesisConnectorConfiguration config) {
         super();
         this.config = config;
         initialize(config);
