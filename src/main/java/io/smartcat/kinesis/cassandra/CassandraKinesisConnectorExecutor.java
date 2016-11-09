@@ -15,7 +15,9 @@ import com.amazonaws.services.kinesis.connectors.interfaces.IBuffer;
 import com.amazonaws.services.kinesis.connectors.interfaces.IEmitter;
 import com.amazonaws.services.kinesis.connectors.interfaces.IFilter;
 import com.amazonaws.services.kinesis.connectors.interfaces.IKinesisConnectorPipeline;
+import com.amazonaws.services.kinesis.connectors.interfaces.ITransformer;
 import com.amazonaws.services.kinesis.connectors.interfaces.ITransformerBase;
+import com.amazonaws.services.kinesis.model.Record;
 
 /**
  * An implementation of {@link KinesisConnectorExecutorBase} for Cassandra. It uses {@link CassandraTransformer} and
@@ -75,11 +77,18 @@ public class CassandraKinesisConnectorExecutor extends KinesisConnectorExecutorB
                     throw new IllegalStateException(e);
                 }
 
-                return new ITransformerBase<byte[], List<CassandraRecord>>() {
+                return new ITransformer<byte[], List<CassandraRecord>>() {
+
                     @Override
                     public List<CassandraRecord> fromClass(byte[] record) throws IOException {
                         return transformer.transform(record);
                     }
+
+                    @Override
+                    public byte[] toClass(Record record) throws IOException {
+                        return record.getData().array();
+                    }
+
                 };
             }
 
