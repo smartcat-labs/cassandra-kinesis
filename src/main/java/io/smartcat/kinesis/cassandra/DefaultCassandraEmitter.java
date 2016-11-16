@@ -1,7 +1,7 @@
 package io.smartcat.kinesis.cassandra;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import com.amazonaws.services.kinesis.connectors.UnmodifiableBuffer;
 import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.QueryOptions;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.Statement;
 
@@ -31,26 +32,30 @@ public class DefaultCassandraEmitter implements CassandraEmitter {
         this.config = config;
 
         LOGGER.info("Connecting to cluster with contact points: {} and port: {}",
-                config.CASSANDRA_CONTACT_POINTS, config.CASSANDRA_PORT);
+                config.cassandraContactPoints, config.cassandraPort);
 
-        final String[] nodes = config.CASSANDRA_CONTACT_POINTS.split(",");
+        final String[] nodes = config.cassandraContactPoints.split(",");
+
+        final QueryOptions queryOptions = new QueryOptions();
+        queryOptions.setConsistencyLevel(config.cassandraConsistencyLevel);
 
         cluster = Cluster.builder()
                 .addContactPoints(nodes)
-                .withPort(config.CASSANDRA_PORT)
-                .withCredentials(config.CASSANDRA_USERNAME, config.CASSANDRA_PASSWORD)
+                .withPort(config.cassandraPort)
+                .withCredentials(config.cassandraUsername, config.cassandraPassword)
+                .withQueryOptions(queryOptions)
                 .build();
         session = cluster.connect();
     }
 
     @Override
     public List<List<CassandraRecord>> emit(UnmodifiableBuffer<List<CassandraRecord>> buffer) throws IOException {
-        if (config == null) {
+        if (config == null || !cluster.isClosed()) {
             throw new IllegalStateException("Emitter has to be initialized first.");
         }
         insert(buffer.getRecords());
 
-        return new ArrayList<>();
+        return Collections.emptyList();
     }
 
     @Override
@@ -65,8 +70,9 @@ public class DefaultCassandraEmitter implements CassandraEmitter {
     @Override
     public void shutdown() {
         LOGGER.info("Disconnecting from cluster.");
-        if (cluster != null) {
+        if (cluster != null && !cluster.isClosed()) {
             cluster.close();
+            cluster = null;
         }
     }
 
@@ -79,7 +85,7 @@ public class DefaultCassandraEmitter implements CassandraEmitter {
     }
 
     private void executeInsertsAsync(Statement statement) {
-        LOGGER.info("Inserting {}", statement.toString());
+        LOGGER.debug("Inserting {}", statement.toString());
         session.executeAsync(statement);
     }
 }

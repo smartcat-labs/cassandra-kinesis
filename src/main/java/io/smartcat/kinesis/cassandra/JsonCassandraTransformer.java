@@ -15,8 +15,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * be JSON objects (strings). Every JSON top-level property is treated as a Cassandra table
  * column. Only JSON properties of type string, boolean or number are processed. {@link CassandraRecord}
  * keyspace and table are set using the
- * {@link CassandraKinesisConnectorConfiguration#CASSANDRA_KEYSPACE} and
- * {@link CassandraKinesisConnectorConfiguration#CASSANDRA_TABLE}.
+ * {@link CassandraKinesisConnectorConfiguration#cassandraKeyspace} and
+ * {@link CassandraKinesisConnectorConfiguration#cassandraTable}.
  */
 public class JsonCassandraTransformer implements CassandraTransformer {
     private static final Log LOGGER = LogFactory.getLog(JsonCassandraTransformer.class);
@@ -37,12 +37,12 @@ public class JsonCassandraTransformer implements CassandraTransformer {
 
         Map<String, Object> map = null;
         try {
-            map  = mapper.readValue(input, Map.class);
-            CassandraRecord outRecord = new CassandraRecord(config.CASSANDRA_KEYSPACE, config.CASSANDRA_TABLE);
+            map = mapper.readValue(input, Map.class);
+            CassandraRecord outRecord = new CassandraRecord(config.cassandraKeyspace, config.cassandraTable);
             for (String prop : map.keySet()) {
                 Object value = map.get(prop);
-                if (value instanceof String || value instanceof Boolean ||
-                        value instanceof Integer || value instanceof Long || value instanceof Double) {
+                if (value instanceof String || value instanceof Boolean || value instanceof Integer
+                        || value instanceof Long || value instanceof Double) {
                     outRecord.setValue(prop, value);
                 }
             }
