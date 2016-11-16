@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import com.amazonaws.services.kinesis.connectors.UnmodifiableBuffer;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
+import com.datastax.driver.core.Statement;
 
 /**
  * This class in a basic implementation of {@link CassandraEmitter}. It connects to a Cassandra
@@ -47,15 +48,15 @@ public class DefaultCassandraEmitter implements CassandraEmitter {
         if (config == null) {
             throw new IllegalStateException("Emitter has to be initialized first.");
         }
-        List<String> inserts = prepareInserts(buffer.getRecords());
-        executeInsertsAsync(inserts);
+        insert(buffer.getRecords());
+
         return new ArrayList<>();
     }
 
     @Override
     public void fail(List<List<CassandraRecord>> records) {
         for (List<CassandraRecord> cassRecords : records) {
-            for (CassandraRecord rec: cassRecords) {
+            for (CassandraRecord rec : cassRecords) {
                 LOGGER.error("Could not emit record: " + rec);
             }
         }
@@ -69,20 +70,16 @@ public class DefaultCassandraEmitter implements CassandraEmitter {
         }
     }
 
-    private List<String> prepareInserts(List<List<CassandraRecord>> records) {
-        final List<String> inserts = new ArrayList<>();
+    private void insert(List<List<CassandraRecord>> records) {
         for (List<CassandraRecord> cassRecords : records) {
             for (CassandraRecord record : cassRecords) {
-                inserts.add(record.toCqlStatement());
+                executeInsertsAsync(record.toCqlStatement());
             }
         }
-        return inserts;
     }
 
-    private void executeInsertsAsync(List<String> inserts) {
-        for (String insert : inserts) {
-            LOGGER.info("Inserting {}", insert);
-            session.executeAsync(insert);
-        }
+    private void executeInsertsAsync(Statement statement) {
+        LOGGER.info("Inserting {}", statement.toString());
+        session.executeAsync(statement);
     }
 }

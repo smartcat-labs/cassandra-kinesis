@@ -1,7 +1,11 @@
 package io.smartcat.kinesis.cassandra;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.datastax.driver.core.Statement;
+import com.datastax.driver.core.querybuilder.QueryBuilder;
 
 /**
  * Represents a data container for a single Cassandra insert record.
@@ -43,6 +47,7 @@ public class CassandraRecord {
 
     /**
      * Returns value for the given name.
+     *
      * @param name the column name
      * @return the respective value or null
      */
@@ -52,7 +57,8 @@ public class CassandraRecord {
 
     /**
      * Sets a value for the given column name.
-     * @param name the column name
+     *
+     * @param name  the column name
      * @param value the value to set
      */
     public void setValue(String name, Object value) {
@@ -75,8 +81,9 @@ public class CassandraRecord {
 
     /**
      * Constructor.
+     *
      * @param keyspace the keyspace name
-     * @param table the table name
+     * @param table    the table name
      */
     public CassandraRecord(String keyspace, String table) {
         this.keyspace = keyspace;
@@ -91,46 +98,13 @@ public class CassandraRecord {
 
     /**
      * Generates a CQL INSERT statement for this record.
+     *
      * @return the CQL INSERT statement
      */
-    public String toCqlStatement() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("INSERT INTO ");
-        sb.append(keyspace);
-        sb.append('.');
-        sb.append(table);
+    public Statement toCqlStatement() {
+        final Statement statement = QueryBuilder.insertInto(keyspace, table)
+                .values(new ArrayList<>(values.keySet()), new ArrayList<>(values.values()));
 
-        boolean first = true;
-        for (String key : values.keySet()) {
-            if (first) {
-                first = false;
-                sb.append(" (");
-            } else {
-                sb.append(',');
-            }
-            sb.append(key);
-        }
-
-        sb.append(") VALUES ");
-        first = true;
-        for (String key : values.keySet()) {
-            if (first) {
-                first = false;
-                sb.append("(");
-            } else {
-                sb.append(',');
-            }
-            Object value = values.get(key);
-            if (value instanceof String) {
-                sb.append("'");
-                sb.append(value);
-                sb.append("'");
-            } else {
-                sb.append(value);
-            }
-        }
-        sb.append(")");
-
-        return sb.toString();
+        return statement;
     }
 }
