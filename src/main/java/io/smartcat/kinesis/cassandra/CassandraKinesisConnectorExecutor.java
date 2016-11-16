@@ -47,10 +47,10 @@ public class CassandraKinesisConnectorExecutor extends KinesisConnectorExecutorB
                 new IKinesisConnectorPipeline<byte[], List<CassandraRecord>>() {
             @Override
             public IEmitter<List<CassandraRecord>> getEmitter(KinesisConnectorConfiguration configuration) {
-                LOGGER.info("Creating CassandraEmitter for class name {}", config.CASSANDRA_EMITTER_CLASS);
+                LOGGER.info("Creating CassandraEmitter for class name {}", config.cassandraEmitterClass);
                 CassandraEmitter emitter = null;
                 try {
-                    emitter = (CassandraEmitter) Class.forName(config.CASSANDRA_EMITTER_CLASS).newInstance();
+                    emitter = (CassandraEmitter) Class.forName(config.cassandraEmitterClass).newInstance();
                     emitter.init(config);
                 } catch (Exception e) {
                     LOGGER.error("Failed to create CassandraEmitter by class name", e);
@@ -66,11 +66,11 @@ public class CassandraKinesisConnectorExecutor extends KinesisConnectorExecutorB
             @Override
             public ITransformerBase<byte[], List<CassandraRecord>> getTransformer(
                     KinesisConnectorConfiguration configuration) {
-                LOGGER.info("Creating CassandraTransformer for class name {}", config.CASSANDRA_TRANSFORMER_CLASS);
+                LOGGER.info("Creating CassandraTransformer for class name {}", config.cassandraTransformerClass);
                 CassandraTransformer transformer;
                 try {
                     transformer =
-                            (CassandraTransformer) Class.forName(config.CASSANDRA_TRANSFORMER_CLASS).newInstance();
+                            (CassandraTransformer) Class.forName(config.cassandraTransformerClass).newInstance();
                     transformer.init(config);
                 } catch (Exception e) {
                     LOGGER.error("Failed to create CassandraTransformer by class name", e);

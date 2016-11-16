@@ -17,8 +17,8 @@ public class JsonCassandraTransformerTest {
     @Test
     public void test_transform() throws Exception {
         Properties props = new Properties();
-        props.put(CassandraKinesisConnectorConfiguration.PROP_CASSANDRA_KEYSPACE, "spacekey");
-        props.put(CassandraKinesisConnectorConfiguration.PROP_CASSANDRA_TABLE, "sink");
+        props.put(CassandraKinesisConnectorConfiguration.ConfigurationOptions.PROP_CASSANDRA_KEYSPACE, "spacekey");
+        props.put(CassandraKinesisConnectorConfiguration.ConfigurationOptions.PROP_CASSANDRA_TABLE, "sink");
         CassandraKinesisConnectorConfiguration config = new CassandraKinesisConnectorConfiguration(props,
                 new DefaultAWSCredentialsProviderChain());
 
