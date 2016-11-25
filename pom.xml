@@ -36,8 +36,7 @@
         <source.level>1.8</source.level>
         <code.level>1.8</code.level>
         <version.cassandra.driver>3.0.4</version.cassandra.driver>
-        <version.amazon-kinesis-client>1.4.0</version.amazon-kinesis-client>
-        <version.amazon-kinesis-connectors>1.2.0</version.amazon-kinesis-connectors>
+        <version.amazon-kinesis-connectors>1.3.0</version.amazon-kinesis-connectors>
         <version.slf4j>1.7.21</version.slf4j>
         <version.junit>4.12</version.junit>
         <version.assertj>2.4.1</version.assertj>
@@ -49,11 +48,6 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>amazon-kinesis-client</artifactId>
-            <version>${version.amazon-kinesis-client}</version>
-        </dependency>
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>amazon-kinesis-connectors</artifactId>
